@@ -20,7 +20,9 @@ async function initDb() {
   const { Pool } = require("pg");
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.PGSSL === "off" ? false : { rejectUnauthorized: false },
+    // réseau privé Railway (.railway.internal) : pas de SSL ; accès public : SSL
+    ssl: (process.env.PGSSL === "off" || /\.railway\.internal/.test(process.env.DATABASE_URL))
+      ? false : { rejectUnauthorized: false },
   });
   await pool.query(`
     CREATE TABLE IF NOT EXISTS progress (
