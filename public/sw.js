@@ -1,5 +1,5 @@
 // Service worker : l'appli marche hors-ligne (train, avion, zone blanche)
-const CACHE = "parla-piano-v1";
+const CACHE = "parla-piano-v2";
 const ASSETS = ["/", "/index.html", "/styles.css", "/data.js", "/app.js", "/manifest.webmanifest",
   "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 

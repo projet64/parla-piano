@@ -173,6 +173,12 @@ function render() {
   if (pending) return renderRepeat(pending);
   const opts = el("div", "opts");
   opts.appendChild(el("div", "eyebrow", "Que réponds-tu ?"));
+  opts.appendChild(directMic(cur));
+  if (heard && heard.direct) {
+    opts.appendChild(el("div", "heard ko", heard.err
+      ? micErrorText(heard.err)
+      : `J'ai entendu : <i>« ${esc(heard.text)} »</i>. Ça ne ressemble à aucune réponse : touche-en une pour l'écouter.`));
+  }
   cur.opts.forEach(o => {
     const b = el("button", "opt");
     b.innerHTML = `<span class="it">${esc(o.it)}</span><span class="say" aria-hidden="true">▶</span><span class="ph">${esc(o.ph)}</span><span class="fr">${esc(o.fr)}</span>`;
@@ -180,6 +186,41 @@ function render() {
     opts.appendChild(b);
   });
   thread.appendChild(opts);
+}
+
+function micErrorText(err) {
+  if (err === "not-allowed" || err === "service-not-allowed")
+    return "Le micro est refusé. Autorise-le pour ce site (Réglages › Safari › Micro, ou l'icône du cadenas dans la barre d'adresse).";
+  return "Je n'ai rien entendu. Parle juste après le bip, assez près du téléphone.";
+}
+function micUnavailable() {
+  return el("div", "heard ko", "Le micro n'est pas disponible ici. Sur iPhone et iPad, ouvre l'appli dans Safari (pas depuis l'icône de l'écran d'accueil) et active Siri / Dictée dans les Réglages.");
+}
+// Bouton principal : on répond à voix haute, l'appli devine quelle réponse c'était
+function directMic(cur) {
+  if (!Recog) return micUnavailable();
+  const m = el("button", "btn mic big", recog ? "J'écoute… parle maintenant" : "🎤 Réponds directement à voix haute");
+  if (recog) m.classList.add("listening");
+  m.onclick = () => {
+    if (recog) { recog.stop(); return; }
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    let found = null;
+    recog = listen((alts, err) => {
+      if (!alts) { heard = { direct: true, err: err || true }; return; }
+      let best = { o: null, s: 0, text: alts[0] };
+      for (const a of alts) for (const o of cur.opts) {
+        const s = score(o.it, a); if (s > best.s) best = { o, s, text: a };
+      }
+      if (best.o && best.s >= 0.6) { found = best.o; heard = { text: best.text, ok: true }; }
+      else heard = { direct: true, text: best.text };
+    }, () => {
+      recog = null;
+      if (found) { pending = found; render(); scrollEnd(); setTimeout(() => validate(found), 1100); }
+      else render();
+    });
+    render();
+  };
+  return m;
 }
 
 function validate(o) {
@@ -204,7 +245,7 @@ function renderRepeat(o) {
   if (heard) {
     const cls = heard.ok ? "heard ok" : "heard ko";
     const msg = heard.err
-      ? "Je n'ai rien entendu. Vérifie l'accès au micro, puis réessaie."
+      ? micErrorText(heard.err)
       : heard.ok
         ? `Bravo, compris ! J'ai entendu : <i>« ${esc(heard.text)} »</i>`
         : `Presque. J'ai entendu : <i>« ${esc(heard.text)} »</i>. Réécoute lentement et retente.`;
@@ -232,6 +273,8 @@ function renderRepeat(o) {
       render();
     };
     row.appendChild(m);
+  } else {
+    r.appendChild(micUnavailable());
   }
   const ok = el("button", "btn primary", "Je l'ai dit ✓"); ok.onclick = () => validate(o);
   const back = el("button", "btn ghost", "Autre réponse"); back.onclick = () => { pending = null; heard = null; render(); };
