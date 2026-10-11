@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parla piano</title>
+<meta name="theme-color" content="#1E5A41">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Parla piano">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Parla <em>piano</em></h1>
+      <p class="lede">Un peu d'italien, à ton rythme. On écoute, on répète à voix haute, on avance.</p>
+    </div>
+    <span class="sync" id="sync" title="Synchronisation">●</span>
+  </header>
+
+  <section class="pill" aria-labelledby="pill-title">
+    <div class="eyebrow" id="pill-title">La pillola del giorno</div>
+    <div class="it" id="p-it"></div>
+    <div class="ph" id="p-ph"></div>
+    <div class="fr" id="p-fr"></div>
+    <div class="row">
+      <button class="chip" id="p-play">▶ Écouter</button>
+      <button class="chip" id="p-slow">▶ Lentement</button>
+      <button class="chip next" id="p-next">Une autre</button>
+    </div>
+    <div class="rule" id="p-rule"></div>
+  </section>
+
+  <nav class="scenes" id="tabs" aria-label="Scènes"></nav>
+
+  <section id="scene" aria-labelledby="scene-title">
+    <div class="scene-head">
+      <div>
+        <div class="eyebrow" id="scene-place"></div>
+        <h2 id="scene-title"></h2>
+      </div>
+      <label class="toggle"><input type="checkbox" id="hidefr"> Italien seul</label>
+    </div>
+    <div class="progress"><span id="bar"></span></div>
+    <div id="voicewarn" class="warn" hidden>Pas de voix italienne trouvée sur cet appareil. Sur iPhone et iPad : Réglages › Accessibilité › Contenu énoncé › Voix › Italien, puis relance l'appli.</div>
+    <div class="thread" id="thread"></div>
+  </section>
+
+  <p class="note" id="foot"></p>
+</div>
+<script src="/data.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
